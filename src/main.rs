@@ -73,7 +73,7 @@ fn yscalc(dataset: &HashMap<String, ItemList>) {
     loop {
         let minmax = izip!(&mut pay_rounded, &pay)
             .map(|(pr, p)| (*pr - *p, pr))
-            .minmax();
+            .minmax_by(|&(a, _), &(b, _)| a.partial_cmp(&b).unwrap());
 
         if let MinMaxResult::MinMax((_, min), (_, max)) = minmax {
             let tgt = if remainder > 0.0 { min } else { max };
