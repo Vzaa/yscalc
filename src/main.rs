@@ -1,21 +1,17 @@
-#[macro_use]
-extern crate itertools;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
+use serde_json;
 
 use std::collections::HashMap;
 use std::env;
+use std::error::Error;
 use std::f64;
 use std::fs::File;
-use std::io::BufReader;
 
-use itertools::{Itertools, MinMaxResult};
+use itertools::{izip, Itertools, MinMaxResult};
+use serde_derive::Deserialize;
 
 #[derive(Deserialize)]
 struct ItemEntry(f64, Option<Vec<String>>);
 
-#[derive(Deserialize)]
 struct ItemList {
     items: Vec<f64>,
 }
@@ -108,7 +104,7 @@ fn yscalc(dataset: &HashMap<String, ItemList>) {
         println!("  {:.2} ({:.2})\n", r, p);
     }
 
-    let paid_sum = pay_rounded.iter().sum::<f64>();
+    let paid_sum: f64 = pay_rounded.iter().sum();
     println!("Sum: {:.2}", paid_sum);
     println!("Remainder: {:.2}", sum_after - paid_sum);
 }
@@ -116,18 +112,18 @@ fn yscalc(dataset: &HashMap<String, ItemList>) {
 fn items_to_hmap(items: &[ItemEntry]) -> HashMap<String, ItemList> {
     let mut dataset: HashMap<String, ItemList> = HashMap::new();
 
-    // Init HashMap with unique names
-    for &ItemEntry(_, ref n) in items {
-        if let Some(ref names) = *n {
-            for name in names {
-                dataset.entry(name.to_owned()).or_insert_with(ItemList::new);
-            }
-        }
+    let names = items
+        .iter()
+        .filter_map(|ItemEntry(_, n)| n.as_ref())
+        .flat_map(|n| n.iter());
+
+    for name in names {
+        dataset.entry(name.to_owned()).or_insert_with(ItemList::new);
     }
 
     // Distribute items
     for &ItemEntry(v, ref n) in items {
-        if let Some(ref names) = *n {
+        if let Some(names) = n {
             let v_div = v / names.len() as f64;
 
             for n in names {
@@ -145,14 +141,13 @@ fn items_to_hmap(items: &[ItemEntry]) -> HashMap<String, ItemList> {
     dataset
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let filename = env::args().nth(1).expect("No argument given");
-
-    let items: Vec<ItemEntry> = File::open(filename)
-        .map(|f| serde_json::from_reader(BufReader::new(f)).unwrap())
-        .unwrap();
-
+    let file = File::open(filename)?;
+    let items: Vec<ItemEntry> = serde_json::from_reader(file)?;
     let dataset = items_to_hmap(&items);
 
     yscalc(&dataset);
+
+    Ok(())
 }
