@@ -1,7 +1,8 @@
 [
+    [ 17.0, "Person A" ],
+    [ [17.0, 18,0], "Person D" ],
     [ [12.0, 10.0], null ],
-    [ [17.0], [ "Person A" ] ],
-    [ [22.0], [ "Person A", "Person B" ] ],
-    [ [10.0], [ "Person B"] ],
+    [ [22.0], [ "Person A", "Person B"] ],
+    [ [10.0], [ "Person B" ] ],
     [ [9.0, 12.0], [ "Person C"] ]
 ]

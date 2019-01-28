@@ -10,7 +10,21 @@ use itertools::{izip, Itertools, MinMaxResult};
 use serde_derive::Deserialize;
 
 #[derive(Deserialize)]
-struct ItemEntry(Vec<f64>, Option<Vec<String>>);
+#[serde(untagged)]
+enum ItemVal {
+    Single(f64),
+    List(Vec<f64>),
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum NameVal {
+    Single(String),
+    List(Vec<String>),
+}
+
+#[derive(Deserialize)]
+struct ItemEntry(ItemVal, Option<NameVal>);
 
 struct ItemList {
     items: Vec<f64>,
@@ -112,31 +126,68 @@ fn yscalc(dataset: &HashMap<String, ItemList>) {
 fn items_to_hmap(items: &[ItemEntry]) -> HashMap<String, ItemList> {
     let mut dataset: HashMap<String, ItemList> = HashMap::new();
 
-    let names = items
-        .iter()
-        .filter_map(|ItemEntry(_, n)| n.as_ref())
-        .flat_map(|n| n.iter());
+    let names = items.iter().filter_map(|ItemEntry(_, n)| n.as_ref());
 
     for name in names {
-        dataset.entry(name.to_owned()).or_insert_with(ItemList::new);
+        match name {
+            NameVal::Single(n) => {
+                dataset.entry(n.to_owned()).or_insert_with(ItemList::new);
+            }
+            NameVal::List(ns) => {
+                for n in ns {
+                    dataset.entry(n.to_owned()).or_insert_with(ItemList::new);
+                }
+            }
+        }
     }
 
     // Distribute items
     for &ItemEntry(ref vs, ref n) in items {
         if let Some(names) = n {
-            for v in vs {
-                let v_div = v / names.len() as f64;
+            let mut tmp = vec![];
+            let names = match names {
+                NameVal::Single(n) => {
+                    tmp.push(n.clone());
+                    &tmp
+                }
+                NameVal::List(ns) => ns,
+            };
 
-                for n in names {
-                    dataset.get_mut(n).unwrap().add(v_div);
+            match vs {
+                ItemVal::Single(v) => {
+                    let v_div = v / names.len() as f64;
+
+                    for n in names {
+                        dataset.get_mut(n).unwrap().add(v_div);
+                    }
+                }
+                ItemVal::List(vs) => {
+                    for v in vs {
+                        let v_div = v / names.len() as f64;
+
+                        for n in names {
+                            dataset.get_mut(n).unwrap().add(v_div);
+                        }
+                    }
                 }
             }
         } else {
-            for v in vs {
-                let v_div = v / dataset.len() as f64;
+            match vs {
+                ItemVal::Single(v) => {
+                    let v_div = v / dataset.len() as f64;
 
-                for e in dataset.values_mut() {
-                    e.add(v_div);
+                    for e in dataset.values_mut() {
+                        e.add(v_div);
+                    }
+                }
+                ItemVal::List(vs) => {
+                    for v in vs {
+                        let v_div = v / dataset.len() as f64;
+
+                        for e in dataset.values_mut() {
+                            e.add(v_div);
+                        }
+                    }
                 }
             }
         }
