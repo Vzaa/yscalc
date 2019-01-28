@@ -10,7 +10,7 @@ use itertools::{izip, Itertools, MinMaxResult};
 use serde_derive::Deserialize;
 
 #[derive(Deserialize)]
-struct ItemEntry(f64, Option<Vec<String>>);
+struct ItemEntry(Vec<f64>, Option<Vec<String>>);
 
 struct ItemList {
     items: Vec<f64>,
@@ -122,18 +122,22 @@ fn items_to_hmap(items: &[ItemEntry]) -> HashMap<String, ItemList> {
     }
 
     // Distribute items
-    for &ItemEntry(v, ref n) in items {
+    for &ItemEntry(ref vs, ref n) in items {
         if let Some(names) = n {
-            let v_div = v / names.len() as f64;
+            for v in vs {
+                let v_div = v / names.len() as f64;
 
-            for n in names {
-                dataset.get_mut(n).unwrap().add(v_div);
+                for n in names {
+                    dataset.get_mut(n).unwrap().add(v_div);
+                }
             }
         } else {
-            let v_div = v / dataset.len() as f64;
+            for v in vs {
+                let v_div = v / dataset.len() as f64;
 
-            for e in dataset.values_mut() {
-                e.add(v_div);
+                for e in dataset.values_mut() {
+                    e.add(v_div);
+                }
             }
         }
     }
