@@ -66,7 +66,8 @@ fn round_scaled(x: f64) -> f64 {
 }
 
 fn ceil_scaled(x: f64) -> f64 {
-    (x * (1.0 / ROUND_TO)).ceil() / (1.0 / ROUND_TO)
+    // Try to mitigate some float errors by substracting 0.00001
+    (x * (1.0 / ROUND_TO) - 0.00001).ceil() / (1.0 / ROUND_TO)
 }
 
 fn yscalc(dataset: &HashMap<String, ItemList>) {
