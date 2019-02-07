@@ -8,6 +8,7 @@ use std::fs::File;
 
 use itertools::{izip, Itertools, MinMaxResult};
 use serde_derive::Deserialize;
+use std::process::exit;
 
 #[derive(Deserialize)]
 #[serde(untagged)]
@@ -197,8 +198,19 @@ fn items_to_hmap(items: &[ItemEntry]) -> HashMap<String, ItemList> {
     dataset
 }
 
+fn usage() {
+    println!("yscalc\n");
+    println!("USAGE:\n    yscalc <INPUT>\n");
+    println!("ARGS:\n    <INPUT>    Input json file");
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
-    let filename = env::args().nth(1).expect("No argument given");
+    let filename = if let Some(f) = env::args().nth(1) {
+        f
+    } else {
+        usage();
+        exit(1);
+    };
     let file = File::open(filename)?;
     let items: Vec<ItemEntry> = serde_json::from_reader(file)?;
     let dataset = items_to_hmap(&items);
