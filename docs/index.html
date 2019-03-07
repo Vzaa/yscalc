@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+  </head>
+  <body>
+    <div class="py-2 text-center bg-light">
+      <h1 class="display-4">yscalc</h1>
+    </div>
+    <div id="app" class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="row">
+            <div class="col">
+              <h2>People</h2>
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <td>
+                      <input ref="name_input" class="form-control" type="text" @keyup.enter="add_person" placeholder="Enter name">
+                    </td>
+                    <td width="5%">
+                      <button @click="add_person" class="btn btn-primary">Add</button>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan=2>
+                      <person-entry
+                        v-for="(person, index) in persons"
+                        @delet-person="del_person"
+                        :key="index"
+                        :id="index"
+                        :name="person"
+                        ></person-entry>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <h2>Items</h2>
+              <div class="row">
+                <div class="col-12">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th colspan=4>
+                          <input min="0" step="0.25" class="form-control" ref="item_input" type="number" @keyup.enter="add_item" placeholder="Enter item price">
+                        </th>
+                        <th width="5%">
+                          <button @click="add_item" class="btn btn-primary">Add</button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr is="item-entry"
+                          v-for="(item, index) in items"
+                          @delet-item="del_item"
+                          @delet-shared="del_shared"
+                          @add-shared="add_shared"
+                          :key="index"
+                          :id="index"
+                          :price="item.price"
+                          :shared="item.shared"
+                          :persons="persons"
+                          ></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <h2>Result</h2>
+          <table class="table table-striped">
+            <thead>
+              <!--<tr v-if= "calc.length > 0">-->
+              <tr>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Total
+                </th>
+                <th>
+                  Details
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr is="result-entry"
+                  v-for="(r, index) in calc"
+                  :key="index"
+                  :res="r"
+                  ></tr>
+              <tr v-if= "calc.length > 0">
+                <td>
+                  Sum
+                </td>
+                <td>
+                  {{ paid }}
+                </td>
+                <td>
+                  Original: {{ org_sum }} + Tip: {{ tip }}, Ratio: {{ ratio }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <h2>as JSON</h2>
+          <textarea readonly style="width: 100%" rows="4">{{ to_json }} </textarea>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="vue.min.js"></script>
+  <script src="yscalc.js"></script>
+  <script src="stuff.js"></script>
+</html>
