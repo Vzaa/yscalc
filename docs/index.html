@@ -42,7 +42,7 @@
               </table>
             </div>
           </div>
-          <div class="row">
+          <div v-if="persons.length > 0" class="row">
             <div class="col">
               <h2>Items</h2>
               <div class="row">
@@ -70,6 +70,14 @@
                           :shared="item.shared"
                           :persons="persons"
                           ></tr>
+                      <tr v-if="items.length > 0">
+                        <td>
+                          Total
+                        </td>
+                        <td colspan="4">
+                          {{ org_before.toFixed(2) }}
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -79,9 +87,9 @@
         </div>
         <div class="col-sm-6">
           <h2>Result</h2>
+          <span>Apply Joker Discount:</span> <input type="checkbox" v-model="joker">
           <table class="table table-striped">
             <thead>
-              <!--<tr v-if= "calc.length > 0">-->
               <tr>
                 <th>
                   Name
@@ -100,15 +108,21 @@
                   :key="index"
                   :res="r"
                   ></tr>
-              <tr v-if= "calc.length > 0">
+              <tr v-if="calc.length > 0">
                 <td>
                   Sum
                 </td>
-                <td>
-                  {{ paid }}
+                <td v-if="joker">
+                  {{ paid.toFixed(2) }} (Was {{org_before.toFixed(2) }})
                 </td>
-                <td>
-                  Original: {{ org_sum }} + Tip: {{ tip }}, Ratio: {{ ratio }}
+                <td v-else>
+                  {{ paid.toFixed(2) }}
+                </td>
+                <td v-if="joker">
+                  {{ org_sum.toFixed(2) }} + Tip: {{ tip }} (Ratio: {{ ratio }})
+                </td>
+                <td v-else>
+                  {{ org_sum.toFixed(2) }} + Tip: {{ tip }}
                 </td>
               </tr>
             </tbody>

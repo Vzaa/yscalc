@@ -43,9 +43,12 @@ function price_cut(tot) {
         return 120.0 - 75.0;
     }
 }
-function yscalc(entries) {
+function yscalc(entries, joker) {
     var sum_before = entries.map(function (x) { return x.sum(); }).reduce(function (a, b) { return a + b; }, 0);
-    var sum_after = sum_before - price_cut(sum_before);
+    var sum_after = sum_before;
+    if (joker) {
+        sum_after -= price_cut(sum_before);
+    }
     var ratio = sum_after / sum_before;
     var pay = entries.map(function (e) { return e.sum() * ratio; });
     var pay_rounded = pay.map(function (c) { return round4(c); });
@@ -90,10 +93,11 @@ function yscalc(entries) {
     }
     for (var i = 0; i < pay_rounded.length; i++) {
         entries[i].total = pay_rounded[i];
+        entries[i].total_nr = pay[i];
     }
     return entries;
 }
-function testan(names, items) {
+function testan(names, items, joker) {
     var dat = new Map();
     for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
         var name = names_1[_i];
@@ -126,5 +130,5 @@ function testan(names, items) {
             as_list.push(value);
         }
     });
-    return yscalc(as_list);
+    return yscalc(as_list, joker);
 }

@@ -23,7 +23,7 @@ Vue.component('result-entry', {
       {{ res.name }}
       </td>
       <td>
-      {{ res.total.toFixed(2) }}
+      {{ res.total.toFixed(2) }} ({{ res.total_nr.toFixed(2) }})
       </td>
       <td>
       {{res.sum().toFixed(2)}} ({{ res.item_str() }})
@@ -87,6 +87,7 @@ var app = new Vue({
                   data: {
                     persons: [],
                     items: [],
+                    joker: true,
                   },
                   methods: {
                     add_person: function() {
@@ -135,10 +136,10 @@ var app = new Vue({
                   },
                   computed: {
                     calc: function() {
-                      return testan(this.persons, this.items)
+                      return testan(this.persons, this.items, this.joker)
                     },
                     paid: function() {
-                      var paid = this.calc.map(function (x) { return x.total; }).reduce(function (a, b) { return a + b; }, 0).toFixed(2)
+                      var paid = this.calc.map(function (x) { return x.total; }).reduce(function (a, b) { return a + b; }, 0)
                       return paid
                     },
                     org_before: function() {
@@ -146,7 +147,13 @@ var app = new Vue({
                       return paid
                     },
                     org_sum: function() {
-                      return (this.org_before - price_cut(this.org_before)).toFixed(2)
+                      let price;
+                      if (this.joker) {
+                        price = this.org_before - price_cut(this.org_before);
+                      } else {
+                        price = this.org_before;
+                      }
+                      return price
                     },
                     tip: function() {
                       return (this.paid - this.org_sum).toFixed(2)
