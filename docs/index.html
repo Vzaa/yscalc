@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title></title>
     <link rel="stylesheet" href="./bootstrap.min.css">
   </head>
@@ -87,10 +88,13 @@
         </div>
         <div class="col-sm-6">
           <h2>Result</h2>
-          <span>Apply Joker Discount:</span> <input type="checkbox" v-model="joker">
+          <div style="flex-direction: row; display: flex; align-items: center;">
+            <span>Apply Joker Discount:</span>
+            <input type="checkbox" v-model="joker">
+          </div>
           <table class="table table-striped">
             <thead>
-              <tr>
+              <tr v-if="calc.length > 0">
                 <th>
                   Name
                 </th>
@@ -99,6 +103,11 @@
                 </th>
                 <th>
                   Details
+                </th>
+              </tr>
+              <tr v-else>
+                <th colspan="3">
+                  No Items
                 </th>
               </tr>
             </thead>
@@ -127,8 +136,14 @@
               </tr>
             </tbody>
           </table>
-          <h2>as JSON</h2>
-          <textarea readonly style="width: 100%" rows="4">{{ to_json }} </textarea>
+          <div style="flex-direction: row; display: flex; align-items: center;">
+            <span>Debug:</span>
+            <input type="checkbox" v-model="debug">
+          </div>
+          <div v-if="debug">
+            <h2>as JSON</h2>
+            <textarea readonly style="width: 100%" rows="4">{{ to_json }} </textarea>
+          </div>
         </div>
       </div>
     </div>

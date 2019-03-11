@@ -88,6 +88,7 @@ var app = new Vue({
                     persons: [],
                     items: [],
                     joker: true,
+                    debug: false
                   },
                   methods: {
                     add_person: function() {
@@ -116,10 +117,13 @@ var app = new Vue({
                       var name = this.persons[id]
                       this.persons.splice(id, 1)
 
-                      this.items.forEach(function(item) {
-                        item.shared = item.shared.filter(n => n !== name)
-                      })
-
+                      if (this.persons.length == 0) {
+                        this.items = []
+                      } else {
+                        this.items.forEach(function(item) {
+                          item.shared = item.shared.filter(n => n !== name)
+                        })
+                      }
                     },
                     del_item: function(id) {
                       this.items.splice(id, 1)
@@ -132,11 +136,16 @@ var app = new Vue({
                     del_shared: function(id, name) {
                       this.items[id].shared = this.items[id].shared.filter(n => n !== name)
                     },
-
                   },
                   computed: {
                     calc: function() {
-                      return testan(this.persons, this.items, this.joker)
+                      return testan(this.persons, this.items, this.joker).sort(function (a, b) {
+                        if (a.name < b.name)
+                          return -1;
+                        if (a.name > b.name)
+                          return 1;
+                        return 0;
+                      })
                     },
                     paid: function() {
                       var paid = this.calc.map(function (x) { return x.total; }).reduce(function (a, b) { return a + b; }, 0)

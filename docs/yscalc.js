@@ -97,6 +97,16 @@ function yscalc(entries, joker) {
     }
     return entries;
 }
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
 function testan(names, items, joker) {
     var dat = new Map();
     for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
@@ -130,5 +140,6 @@ function testan(names, items, joker) {
             as_list.push(value);
         }
     });
+    shuffle(as_list);
     return yscalc(as_list, joker);
 }
