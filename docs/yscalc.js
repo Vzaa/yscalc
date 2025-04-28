@@ -27,20 +27,17 @@ function ceil4(tot) {
     return Math.ceil(tot * 4.0 - 0.00001) / 4.0;
 }
 function price_cut(tot) {
-    if (tot < 30.0) {
+    if (tot < 150.0) {
         return 0.0;
     }
-    else if (tot < 40.0) {
-        return 30.0 - 20.0;
+    else if (tot < 300.0) {
+        return 150.0 - 90.0;
     }
-    else if (tot < 70.0) {
-        return 40.0 - 25.0;
-    }
-    else if (tot < 120.0) {
-        return 70.0 - 45.0;
+    else if (tot < 450.0) {
+        return 300.0 - 200.0;
     }
     else {
-        return 120.0 - 75.0;
+        return 450.0 - 300.0;
     }
 }
 function yscalc(entries, joker) {

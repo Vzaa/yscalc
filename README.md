@@ -4,6 +4,12 @@ yscalc helps resolve how much each person needs to pay in Yemeksepeti's Joker
 discounted prices. It rounds what each person needs to pay to 0.25 and divides
 the remainder fairly.  Any remaining extra is left as tip.
 
+## Web App
+
+Here https://vzaa.github.io/yscalc/
+
+# Old Readme
+
 ## Example Run
 
 Format for each entry is `[ price, [List of Names]]`. Where names are the list
